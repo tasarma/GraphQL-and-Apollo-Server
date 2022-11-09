@@ -77,6 +77,7 @@ async function startApolloServer() {
       username: 'rwieruch',
       email: 'hello@robin.com',
       password: 'rwieruch',
+      role: 'ADMIN',
       messages: [
         {
           text: 'published the road to learn react',

@@ -18,6 +18,8 @@ export default gql`
       login: String!
       password: String!
     ): Token!
+
+    deleteUser(id: ID!): Boolean!
   }
 
   type Token {
@@ -28,6 +30,7 @@ export default gql`
     id: ID!
     username: String!
     email: String!
+    role: String
     messages: [Message!]
   }
 `;
