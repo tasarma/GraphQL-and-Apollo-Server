@@ -2,7 +2,7 @@ import { ForbiddenError } from 'apollo-server';
 import { v4 as uuidv4 } from 'uuid';
 import { combineResolvers } from 'graphql-resolvers';
 
-import { isAuthenticated } from './authorization';
+import { isAuthenticated, isMessageOwner } from './authorization';
 
 export default {
     Query: {
@@ -24,13 +24,16 @@ export default {
         });
       }),
   
-      deleteMessage: async (parent, { id }, { models }) => {
+      deleteMessage: combineResolvers(
+        isAuthenticated,
+        isMessageOwner,
+        async (parent, { id }, { models }) => {
         return await models.Message.destroy({
           where: {
             id
           }
         });
-      },
+      }),
   
       updateMessage: async (parent, { id, text }, { me, models }) => {
         return await models.Message.update({
