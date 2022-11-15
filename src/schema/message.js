@@ -20,7 +20,7 @@ export default gql`
 
   type PageInfo {
     hasNextPage: Boolean!
-    endCursor: Date!
+    endCursor: String!
   }
 
   type Message {
