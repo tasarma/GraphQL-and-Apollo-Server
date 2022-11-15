@@ -6,6 +6,8 @@ import messageSchema from './message';
 // Both schemas are merged with the help of a utility called linkSchema.
 
 const linkSchema = gql`
+  scalar Date
+  
   type Query {
     _: Boolean
   }

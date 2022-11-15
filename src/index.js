@@ -65,7 +65,7 @@ async function startApolloServer() {
 
   sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
     if (eraseDatabaseOnSync) {
-      createUsersWithMessagges();
+      createUsersWithMessagges(new Date());
     }
 
     app.listen({ port: 8000 }, () => {
@@ -73,7 +73,7 @@ async function startApolloServer() {
     });
   });
   
-  const createUsersWithMessagges = async () => {
+  const createUsersWithMessagges = async (date) => {
     await models.User.create({
       username: 'rwieruch',
       email: 'hello@robin.com',
@@ -82,6 +82,7 @@ async function startApolloServer() {
       messages: [
         {
           text: 'published the road to learn react',
+          createdAt: date.setSeconds(date.getSeconds() + 1),
         },
       ],
     }, {
@@ -96,9 +97,11 @@ async function startApolloServer() {
         messages: [
           {
             text: 'Happy to release ...',
+            createdAt: date.setSeconds(date.getSeconds() + 1),
           },
           {
             text: 'Published a complete ...',
+            createdAt: date.setSeconds(date.getSeconds() + 1),
           },
         ],
       },
