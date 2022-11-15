@@ -30,7 +30,7 @@ export default gql`
     user: User!
   }
 
-  extend type Subsription {
+  extend type Subscription {
     messageCreated: MessageCreated!
   }
 
