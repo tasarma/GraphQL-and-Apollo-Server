@@ -19,14 +19,18 @@ export default {
 
           const messages = await models.Message.findAll({
             order: [['createdAt', 'DESC']], 
-            limit,
+            limit: limit + 1,
             ...cursorOptions,
           });
 
+          const hasNextPage = messages.length > limit;
+          const edges = hasNextPage ? messages.slice(0, -1) : messages;
+
           return {
-            edges: messages,
+            edges,
             pageInfo: {
-              endCursor: messages[messages.length - 1].createdAt,
+              hasNextPage,
+              endCursor: edges[edges.length - 1].createdAt,
             },
           }; 
         },
