@@ -3,14 +3,23 @@ import { v4 as uuidv4 } from 'uuid';
 import { combineResolvers } from 'graphql-resolvers';
 
 import { isAuthenticated, isMessageOwner } from './authorization';
+import { Sequelize } from 'sequelize';
 
 export default {
     Query: {
       messages: async (
         parent, 
-        { offset=0, limit=100 }, 
+        { cursor, limit=100 }, 
         { models }) => { 
-        return await models.Message.findAll({ offset, limit }); 
+        return await models.Message.findAll({
+          order: [['createdAt', 'DESC']], 
+          limit,
+          where: cursor ? {
+            createdAt: {
+              [Sequelize.Op.lt]: cursor,
+            },
+          }: null,
+        }); 
       },
       message: async (parent, { id }, { models }) => { 
         return await models.Message.findByPk(id); 
