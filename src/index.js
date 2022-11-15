@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import cors from 'cors';
+import http from 'http';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { ApolloServer, AuthenticationError } from 'apollo-server-express';
@@ -43,14 +44,21 @@ async function startApolloServer() {
     },
 
     // bir kere db yi gecirmeye calis her seferinde yenilemesin
-    context: async ({ req }) => {
-      const me = await getMe(req);
-      
-      return { 
-        models,
-        me,
-        secret: process.env.SECRET,
-      };
+    context: async ({ req, connection }) => {
+      if (connection) {
+        return {
+          models,
+        };
+      }
+
+      if (req){
+        const me = await getMe(req);
+        return { 
+          models,
+          me,
+          secret: process.env.SECRET,
+        };
+      }
     },
 
     // introspection: true,
@@ -58,19 +66,19 @@ async function startApolloServer() {
 
   await server.start();
 
-  server.applyMiddleware({
-    app,
-    path: '/',
-  });
+  server.applyMiddleware({ app, path: '/', });
+
+  const httpServer = http.createServer(app);
+  server.installSubscriptionHandlers(httpServer);
 
   sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
     if (eraseDatabaseOnSync) {
       createUsersWithMessagges(new Date());
     }
 
-    app.listen({ port: 8000 }, () => {
-      console.log('Apollo server on 8000/');
-    });
+    httpServer.listen({ port: 8000 }, () => {
+      console.log('Apollo server on http://localhost:8000/');
+    })
   });
   
   const createUsersWithMessagges = async (date) => {

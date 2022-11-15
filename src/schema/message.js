@@ -29,4 +29,12 @@ export default gql`
     createdAt: Date!
     user: User!
   }
+
+  extend type Subsription {
+    messageCreated: MessageCreated!
+  }
+
+  type MessageCreated {
+    message: Message!
+  }
 `;
