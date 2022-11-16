@@ -5,7 +5,9 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { ApolloServer, AuthenticationError } from 'apollo-server-express';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import DataLoader from 'dataloader';
 
+import loaders from './loaders';
 import schema from './schema'
 import resolvers from './resolvers'
 import models, { sequelize } from './models'
@@ -27,8 +29,11 @@ const getMe = async req => {
   }
 };
 
+
 async function startApolloServer() {
   const httpServer = http.createServer(app);
+  const userLoader =  new DataLoader(keys => batchUsers(keys, models));
+
   const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
@@ -50,6 +55,11 @@ async function startApolloServer() {
       if (connection) {
         return {
           models,
+          loaders: {
+            user: new DataLoader(keys => 
+              loaders.user.batchUsers(keys, models),
+              ),
+          },
         };
       }
 
@@ -59,6 +69,11 @@ async function startApolloServer() {
           models,
           me,
           secret: process.env.SECRET,
+          loaders: {
+            user: new DataLoader(keys => 
+              loaders.user.batchUsers(keys, models),
+              ),
+          },
         };
       }
     },
