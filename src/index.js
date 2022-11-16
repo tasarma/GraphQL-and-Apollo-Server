@@ -71,8 +71,9 @@ async function startApolloServer() {
   const httpServer = http.createServer(app);
   server.installSubscriptionHandlers(httpServer);
 
-  sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
-    if (eraseDatabaseOnSync) {
+  const isTest = !!process.env.TEST_DATABASE;
+  sequelize.sync({ force: isTest }).then(async () => {
+    if (isTest) {
       createUsersWithMessagges(new Date());
     }
 
