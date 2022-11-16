@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node src/index.js",
-    "test-server": "TEST_DATABASE=mytestdatabase npm start",
-    "test": "mocha --require @babel/register 'src/**/*.spec.js'"
+    "test-server": "TEST_DATABASE=deneme npm start",
+    "test": "mocha --require @babel/register 'src/**/*.spec.js'",
+    "bos": "nodemon --exec babel-node src/bos.js"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "nodemon": "^2.0.19"
   },
   "dependencies": {
+    "@apollo/server": "^4.1.1",
     "@graphql-tools/schema": "^9.0.10",
     "apollo-server": "^3.10.3",
     "apollo-server-express": "^3.10.3",

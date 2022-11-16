@@ -4,7 +4,7 @@ import http from 'http';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { ApolloServer, AuthenticationError } from 'apollo-server-express';
-
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 
 import schema from './schema'
 import resolvers from './resolvers'
@@ -28,9 +28,12 @@ const getMe = async req => {
 };
 
 async function startApolloServer() {
+  const httpServer = http.createServer(app);
   const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+
     formatError: error => {
       // leave only the important validation error
       const message = error.message
@@ -43,7 +46,6 @@ async function startApolloServer() {
       };
     },
 
-    // bir kere db yi gecirmeye calis her seferinde yenilemesin
     context: async ({ req, connection }) => {
       if (connection) {
         return {
@@ -67,9 +69,6 @@ async function startApolloServer() {
   await server.start();
 
   server.applyMiddleware({ app, path: '/', });
-
-  const httpServer = http.createServer(app);
-  server.installSubscriptionHandlers(httpServer);
 
   const isTest = !!process.env.TEST_DATABASE;
   sequelize.sync({ force: isTest }).then(async () => {
